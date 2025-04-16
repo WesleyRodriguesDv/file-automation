@@ -1,34 +1,48 @@
 import os
 import shutil
 from pathlib import Path
+import mimetypes
 
 # Caminhos base
 pasta_downloads = Path.home() / 'Downloads'
 pasta_documentos = Path.home() / 'Documentos'
 pasta_imagens = Path.home() / 'Imagens'
+pasta_videos = Path.home() / 'Vídeos'
+pasta_musicas = Path.home() / 'Músicas'
+pasta_diversos = Path('C:/Programas Diversos')
 
-# Extensões por categoria
+# Extensões conhecidas
 ext_documentos = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.xlsm']
-ext_imagens = ['.jpg', '.jpeg', '.png']
+ext_imagens = ['.jpg', '.jpeg', '.png', '.webp']
 
-# Garante que as pastas existam
-pasta_documentos.mkdir(parents=True, exist_ok=True)
-pasta_imagens.mkdir(parents=True, exist_ok=True)
+# Cria todas as pastas se não existirem
+for pasta in [pasta_documentos, pasta_imagens, pasta_videos, pasta_musicas, pasta_diversos]:
+    pasta.mkdir(parents=True, exist_ok=True)
+
+# Função para identificar tipo MIME (áudio, vídeo, etc)
+def tipo_arquivo(caminho: Path):
+    tipo, _ = mimetypes.guess_type(caminho)
+    return tipo or ''
 
 # Percorre os arquivos da pasta Downloads
 for arquivo in pasta_downloads.iterdir():
     if arquivo.is_file():
         ext = arquivo.suffix.lower()
+        tipo = tipo_arquivo(arquivo)
 
-        # Mover para Documentos
+        # Verifica categorias
         if ext in ext_documentos:
             destino = pasta_documentos / arquivo.name
-        # Mover para Imagens
         elif ext in ext_imagens:
             destino = pasta_imagens / arquivo.name
+        elif tipo.startswith('video'):
+            destino = pasta_videos / arquivo.name
+        elif tipo.startswith('audio'):
+            destino = pasta_musicas / arquivo.name
         else:
-            continue  # ignora arquivos que não se encaixam nas categorias
+            destino = pasta_diversos / arquivo.name
 
+        # Move o arquivo
         try:
             shutil.move(str(arquivo), str(destino))
             print(f'Movido: {arquivo.name} → {destino.parent.name}')
