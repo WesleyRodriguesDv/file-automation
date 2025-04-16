@@ -9,17 +9,17 @@ pasta_documentos = Path.home() / 'Documentos'
 pasta_imagens = Path.home() / 'Imagens'
 pasta_videos = Path.home() / 'Vídeos'
 pasta_musicas = Path.home() / 'Músicas'
-pasta_diversos = Path('C:/Programas Diversos')
+pasta_instalacoes = pasta_downloads / 'Instalações'
 
 # Extensões conhecidas
 ext_documentos = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.xlsm']
 ext_imagens = ['.jpg', '.jpeg', '.png', '.webp']
 
 # Cria todas as pastas se não existirem
-for pasta in [pasta_documentos, pasta_imagens, pasta_videos, pasta_musicas, pasta_diversos]:
+for pasta in [pasta_documentos, pasta_imagens, pasta_videos, pasta_musicas, pasta_instalacoes]:
     pasta.mkdir(parents=True, exist_ok=True)
 
-# Função para identificar tipo MIME (áudio, vídeo, etc)
+# Função para identificar tipo MIME
 def tipo_arquivo(caminho: Path):
     tipo, _ = mimetypes.guess_type(caminho)
     return tipo or ''
@@ -40,7 +40,7 @@ for arquivo in pasta_downloads.iterdir():
         elif tipo.startswith('audio'):
             destino = pasta_musicas / arquivo.name
         else:
-            destino = pasta_diversos / arquivo.name
+            destino = pasta_instalacoes / arquivo.name
 
         # Move o arquivo
         try:
